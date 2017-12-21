@@ -12,6 +12,7 @@ services:
         networks:
             - local
         # command: "-dev -ui"
+        #
         
     # app:
         # image: consultest
