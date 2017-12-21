@@ -1,32 +1,30 @@
 version: '3'
 services:
-    consul:
+    consul-server:
         image: consul
-        container_name: consul
+        container_name: consul-server
         environment:
-            - CONSUL_BIND_INTERFACE=eth0
-            - CONSUL_CLIENT_INTERFACE=eth0
+            - consul_bind_interface=eth0
+            - consul_client_interface=eth0
         ports:
             - "8500:8500"
             - "8600:8600"
-        command: "agent -server -ui"
-        expose:
-            - "8500"
-        networks:
-            - "app-network"
-    app:
-        image: consultest
-        container_name: app
-        build:
-            context: "D:/Projects/ConsulTest"
-            dockerfile: ConsulTest/Dockerfile
-        ports:
-            - "1234:1234"
-        depends_on:
-            - consul
-        networks:
-            - "app-network"
+        # command: "-dev -ui"
+        
+    # app:
+        # image: consultest
+        # container_name: app
+        # build:
+            # context: "D:/Projects/ConsulTest"
+            # dockerfile: ConsulTest/Dockerfile
+        # ports:
+            # - "1234:1234"
+        # depends_on:
+            # - consul
+            
 networks:
-    "app-network":
+    default:
+        external:
+            name: symboticnet
         
         

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -6,7 +8,7 @@ namespace ConsulTest
 {
     internal class Server : IDisposable
     {
-        private readonly Uri _address;
+        private readonly List<string> _addresses;
 
         private bool _isListening = false;
         private HttpListener _listener = null;
@@ -14,9 +16,9 @@ namespace ConsulTest
         private byte[] _response = Encoding.UTF8.GetBytes("Hi");
 
 
-        public Server(Uri address)
+        public Server(IEnumerable<string> addresses)
         {
-            this._address = address;
+            this._addresses = addresses.ToList();
         }
 
 
@@ -24,12 +26,16 @@ namespace ConsulTest
         public void Start()
         {
             this._listener = new HttpListener();
-            this._listener.Prefixes.Add(this._address.ToString());
+            this._addresses.ForEach(address => 
+                this._listener.Prefixes.Add(address)
+            );
 
             this._listener.Start();
             this._isListening = true;
 
-            Console.WriteLine($"Server is listening on address: {this._address}");
+            this._addresses.ForEach(address =>
+                Console.WriteLine($"Server is listening on address: {address}")
+            );
 
             while (this._isListening)
             {

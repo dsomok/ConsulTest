@@ -1,5 +1,6 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using ConsulTest.Library;
+using ConsulTest.Library.Registration;
+using System;
 
 namespace ConsulTest
 {
@@ -7,11 +8,15 @@ namespace ConsulTest
     {
         static void Main(string[] args)
         {
-            // var consulRegistry = new ConsulRegistry();
-            var address = new Uri("http://127.0.0.1:1234");
-            using (var server = new Server(address))
+            var consulRegistry = new ConsulRegistry();
+            
+            using (var server = new Server(new[] { "http://*:1234/" }))
             {
-                // consulRegistry.AddService("console", 1234).Wait();
+                consulRegistry.StartServiceRegistration("console-host", 1234)
+                              .AddHttpCheck(TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2))
+                              .Register()
+                              .Wait();
+
                 Console.WriteLine("Registered service in Consul");
 
                 server.Start();
