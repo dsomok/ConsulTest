@@ -9,6 +9,8 @@ services:
         ports:
             - "8500:8500"
             - "8600:8600"
+        networks:
+            - local
         # command: "-dev -ui"
         
     # app:
@@ -23,8 +25,11 @@ services:
             # - consul
             
 networks:
-    default:
-        external:
-            name: symboticnet
+    local:
+        driver: bridge
+        ipam:
+          driver: default
+          config:
+          - subnet: "172.19.0.0/16"
         
         
