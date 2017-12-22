@@ -8,8 +8,8 @@ namespace ConsulTest
     {
         static void Main(string[] args)
         {
-            var consulRegistry = new ConsulRegistry();
-            
+            var consulRegistry = new ConsulRegistry("http://consul:8500");
+
             using (var server = new Server(new[] { "http://*:1234/" }))
             {
                 consulRegistry.StartServiceRegistration("console-host", 1234)

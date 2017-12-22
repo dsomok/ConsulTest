@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsulTest", "ConsulTest\Co
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{4C555380-4CB5-4F1A-B40E-99DE73168D65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulTest.Client", "..\ConsulTest.Client\ConsulTest.Client.csproj", "{A1B91920-F873-4F37-A4B9-068E67519B17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulTest.Client", "ConsulTest.Client\ConsulTest.Client.csproj", "{A1B91920-F873-4F37-A4B9-068E67519B17}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulTest.Library", "ConsulTest.Library\ConsulTest.Library.csproj", "{A2096E51-5D22-4A85-91DB-86A2649BB4D7}"
 EndProject

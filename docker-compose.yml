@@ -1,6 +1,6 @@
 version: '3'
 services:
-    consul-server:
+    consul:
         image: consul
         container_name: consul-server
         environment:
@@ -11,20 +11,33 @@ services:
             - "8600:8600"
         networks:
             - local
-        # command: "-dev -ui"
-        #
         
-    # app:
-        # image: consultest
-        # container_name: app
-        # build:
-            # context: "D:/Projects/ConsulTest"
-            # dockerfile: ConsulTest/Dockerfile
-        # ports:
-            # - "1234:1234"
-        # depends_on:
-            # - consul
+    host:
+        image: consultest
+        container_name: host
+        build:
+            context: "D:/Projects/ConsulTest"
+            dockerfile: ConsulTest/dockerfile
+        ports:
+            - "1234:1234"
+        networks:
+            - local
+        depends_on:
+            - consul
             
+    client:
+        image: consultest.client
+        container_name: client
+        build:
+            context: "D:/Projects/ConsulTest"
+            dockerfile: ConsulTest.Client/Dockerfile
+        ports:
+            - "1235:1235"
+        networks:
+            - local
+        depends_on:
+            - host
+
 networks:
     local:
         driver: bridge

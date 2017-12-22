@@ -13,12 +13,15 @@ namespace ConsulTest.Library
         private readonly ConsulClient _client;
 
 
-        public ConsulRegistry()
+        public ConsulRegistry() : this("http://127.0.0.1:8500")
+        {
+        }
+
+        public ConsulRegistry(string address)
         {
             _client = new ConsulClient(config =>
             {
-                config.Address = new Uri("http://127.0.0.1:8500");
-                //config.Address = new Uri("http://172.22.164.38:8500");
+                config.Address = new Uri(address);
             });
         }
 
