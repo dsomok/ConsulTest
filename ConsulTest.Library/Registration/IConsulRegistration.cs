@@ -1,14 +1,13 @@
-﻿using Consul;
-using System.Collections.Generic;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace ConsulTest.Library.Registration
 {
     public interface IConsulRegistration
     {
-        ConsulClient Client { get; }
-        AgentServiceRegistration Registration { get; }
-        IList<AgentServiceCheck> Checks { get; }
+        IConsulRegistration AddHttpHealthCheckEndpoint(int healthCheckPort);
+        IConsulRegistration AddHttpCheck(TimeSpan interval, TimeSpan deregisterFailedAfter);
+        IConsulRegistration AddHttpCheck(int port, TimeSpan interval, TimeSpan deregisterFailedAfter);
 
         Task Register();
         Task Deregister();

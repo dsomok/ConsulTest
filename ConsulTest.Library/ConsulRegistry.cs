@@ -2,32 +2,23 @@
 using ConsulTest.Library.Registration;
 using System;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace ConsulTest.Library
 {
-    public class ConsulRegistry
+    public class ConsulRegistry : IConsulRegistry
     {
-        private readonly ConsulClient _client;
+        private readonly IConsulClient _client;
 
 
-        public ConsulRegistry() : this("http://127.0.0.1:8500")
+        public ConsulRegistry(IConsulClient client)
         {
-        }
-
-        public ConsulRegistry(string address)
-        {
-            _client = new ConsulClient(config =>
-            {
-                config.Address = new Uri(address);
-            });
+            this._client = client;
         }
 
 
 
-        public IConsulRegistration StartServiceRegistration(string name, int port)
+        public IConsulRegistration CreateServiceRegistration(string name, int port)
         {
             return new ConsulRegistration(this._client, name, port);
         }

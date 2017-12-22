@@ -1,5 +1,5 @@
-﻿using ConsulTest.Library;
-using ConsulTest.Library.Registration;
+﻿using Consul;
+using ConsulTest.Library;
 using System;
 using System.Threading;
 
@@ -11,8 +11,9 @@ namespace ConsulTest.Client
         {
             var client = new Client();
 
-            var consulRegistry = new ConsulRegistry("http://consul:8500");
-            consulRegistry.StartServiceRegistration("console-client", 80)
+            var consulClient = new ConsulClient(config => config.Address = new Uri("http://consul:8500"));
+            var consulRegistry = new ConsulRegistry(consulClient);
+            consulRegistry.CreateServiceRegistration("console-client", 80)
                 .AddHttpHealthCheckEndpoint(1235)
                 .AddHttpCheck(1235, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2))
                 .Register()
