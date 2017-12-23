@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Consul;
+using Microsoft.Extensions.Configuration;
 
 namespace ConsulTest.Configuration
 {
@@ -6,7 +8,13 @@ namespace ConsulTest.Configuration
     {
         public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder configurationBuilder)
         {
-            configurationBuilder.Add(new ConsulConfigurationSource());
+            configurationBuilder.Add(new ConsulConfigurationSource(c => { }));
+            return configurationBuilder;
+        }
+
+        public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder configurationBuilder, Action<ConsulClientConfiguration> clientConfiguration)
+        {
+            configurationBuilder.Add(new ConsulConfigurationSource(clientConfiguration));
             return configurationBuilder;
         }
     }

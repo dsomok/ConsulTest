@@ -7,9 +7,16 @@ namespace ConsulTest.Configuration
 {
     internal class ConsulConfigurationProvider : ConfigurationProvider
     {
+        private readonly Action<ConsulClientConfiguration> _clientConfiguration;
+
+        public ConsulConfigurationProvider(Action<ConsulClientConfiguration> clientConfiguration)
+        {
+            _clientConfiguration = clientConfiguration;
+        }
+
         public override void Load()
         {
-            using (var consulClient = new ConsulClient(config => config.Address = new Uri("http://localhost:8500")))
+            using (var consulClient = new ConsulClient(_clientConfiguration))
             {
                 var response = consulClient.KV.List("").Result.Response;
                 if (response == null)
