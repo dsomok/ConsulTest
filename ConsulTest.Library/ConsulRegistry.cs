@@ -18,6 +18,11 @@ namespace ConsulTest.Library
 
 
 
+        public IConsulRegistration CreateServiceRegistration(string serviceName)
+        {
+            return this.CreateServiceRegistration(serviceName, 0);
+        }
+
         public IConsulRegistration CreateServiceRegistration(string serviceName, int port)
         {
             var registration = new ConsulRegistration(this._client, serviceName, port);

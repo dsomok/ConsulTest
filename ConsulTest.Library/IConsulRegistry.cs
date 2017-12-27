@@ -6,6 +6,7 @@ namespace ConsulTest.Library
 {
     public interface IConsulRegistry
     {
+        IConsulRegistration CreateServiceRegistration(string serviceName);
         IConsulRegistration CreateServiceRegistration(string serviceName, int port);
         Task<Uri> Discover(string serviceName);
     }

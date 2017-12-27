@@ -1,5 +1,6 @@
 ﻿using Consul;
 using ConsulTest.Library;
+using ConsulTest.Library.Registration;
 using System;
 using System.Threading;
 
