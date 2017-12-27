@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsulTest.Library.Registration
@@ -13,7 +14,8 @@ namespace ConsulTest.Library.Registration
     {
         private readonly AgentServiceRegistration _registration;
         private readonly IConsulClient _client;
-        private IList<AgentServiceCheck> _healthChecks = new List<AgentServiceCheck>();
+        private IList<AgentCheckRegistration> _healthChecks = new List<AgentCheckRegistration>();
+        private Timer _ttlStatusUpdater = null;
 
 
 
@@ -33,65 +35,66 @@ namespace ConsulTest.Library.Registration
 
 
 
-        public IConsulRegistration AddHttpHealthCheckEndpoint(int healthCheckPort)
+        public string ID => this._registration.ID;
+
+        public int Port => this._registration.Port;
+
+        public string Address => this._registration.Address;
+
+
+
+        public void AddHealthCheck(AgentCheckRegistration healthCheck)
         {
-            var responseBody = Encoding.UTF8.GetBytes("OK");
-            var address = $"http://*:{healthCheckPort}/";
-
-            var listener = new HttpListener
-            {
-                Prefixes = { address }
-            };
-
-            listener.Start();
-
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    var context = listener.GetContext();
-                    var response = context.Response;
-
-                    response.OutputStream.Write(responseBody, 0, responseBody.Length);
-                    response.OutputStream.Close();
-                }
-            });
-
-            return this;
+            healthCheck.ID = this.GetCheckID(healthCheck);
+            this._healthChecks.Add(healthCheck);
         }
 
-        public IConsulRegistration AddHttpCheck(TimeSpan interval, TimeSpan deregisterFailedAfter)
-        {
-            return this.AddHttpCheck(this._registration.Port, interval, deregisterFailedAfter);
-        }
 
-        public IConsulRegistration AddHttpCheck(int port, TimeSpan interval, TimeSpan deregisterFailedAfter)
-        {
-            var httpCheck = new AgentServiceCheck
-            {
-                DockerContainerID = Environment.MachineName,
-                DeregisterCriticalServiceAfter = deregisterFailedAfter,
-                Interval = interval,
-                HTTP = $"{this._registration.Address}:{port}"
-            };
-
-            this._healthChecks.Add(httpCheck);
-
-            return this;
-        }
 
         public Task Register()
         {
+            if (!this.Validate(out string errorMessage))
+            {
+                throw new InvalidOperationException($"Failed to register service in Consul. Error: {errorMessage}");
+            }
+
+            this.StartTTLStatusUpdater();
             this._registration.Checks = this._healthChecks.ToArray();
+
             return this._client.Agent.ServiceRegister(this._registration);
         }
 
         public Task Deregister()
         {
+            this._ttlStatusUpdater?.Dispose();
             return this._client.Agent.ServiceDeregister(this._registration.ID);
         }
 
 
+
+        protected virtual bool Validate(out string errorMessage)
+        {
+            if (this._healthChecks.Count(check => check.TTL != null) > 1)
+            {
+                errorMessage = "Multiple TTL checks are not supported";
+                return false;
+            }
+
+            errorMessage = string.Empty;
+            return true;
+        }
+
+
+
+        private string GetCheckID(AgentCheckRegistration healthCheck)
+        {
+            if (!string.IsNullOrEmpty(healthCheck.ID))
+            {
+                return healthCheck.ID;
+            }
+
+            return $"service:{this._registration.ID}:{this._healthChecks.Count + 1}";
+        }
 
         private string GetServiceID(string name)
         {
@@ -102,6 +105,24 @@ namespace ConsulTest.Library.Registration
         {
             var addresses = Dns.GetHostAddresses(Dns.GetHostName());
             return addresses.FirstOrDefault(addr => addr.AddressFamily == AddressFamily.InterNetwork);
+        }
+
+        private void StartTTLStatusUpdater()
+        {
+            var ttlCheck = this._healthChecks.SingleOrDefault(check => check.TTL != null);
+            if (ttlCheck != null)
+            {
+                this._ttlStatusUpdater = new Timer(async state =>
+                {
+                    try
+                    {
+                        await this._client.Agent.PassTTL(ttlCheck.ID, "OK");
+                    }
+                    catch { }
+                }, null, TimeSpan.Zero, ttlCheck.Interval.Value);
+
+                ttlCheck.Interval = null;
+            }
         }
     }
 }

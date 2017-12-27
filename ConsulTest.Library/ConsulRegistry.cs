@@ -18,9 +18,10 @@ namespace ConsulTest.Library
 
 
 
-        public IConsulRegistration CreateServiceRegistration(string name, int port)
+        public IConsulRegistration CreateServiceRegistration(string serviceName, int port)
         {
-            return new ConsulRegistration(this._client, name, port);
+            var registration = new ConsulRegistration(this._client, serviceName, port);
+            return registration;
         }
 
 
@@ -36,7 +37,5 @@ namespace ConsulTest.Library
 
             return new Uri($"{service.Address}:{service.Port}");
         }
-
-
     }
 }
