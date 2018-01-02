@@ -21,7 +21,7 @@ namespace ConsulTest.Configuration
             var builder = new ConfigurationBuilder()
                     .AddCommandLine(args, new Dictionary<string, string>() { { "-foo", "foo" } })
                     .AddEnvironmentVariables()
-                    .AddConsulConfiguration()
+                    .AddConsulConfiguration("sym.store.bot.bot574")
                 ;
             return builder.Build();
         }

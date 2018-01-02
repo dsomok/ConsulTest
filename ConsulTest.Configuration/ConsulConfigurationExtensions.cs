@@ -6,15 +6,16 @@ namespace ConsulTest.Configuration
 {
     internal static class ConsulConfigurationExtensions
     {
-        public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder configurationBuilder)
+        public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder configurationBuilder, string applicationName)
         {
-            configurationBuilder.Add(new ConsulConfigurationSource(c => { }));
+            configurationBuilder.Add(new ConsulConfigurationSource(c => { }, applicationName));
             return configurationBuilder;
         }
 
-        public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder configurationBuilder, Action<ConsulClientConfiguration> clientConfiguration)
+        public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder configurationBuilder, string applicationName, 
+            Action<ConsulClientConfiguration> clientConfiguration)
         {
-            configurationBuilder.Add(new ConsulConfigurationSource(clientConfiguration));
+            configurationBuilder.Add(new ConsulConfigurationSource(clientConfiguration, applicationName));
             return configurationBuilder;
         }
     }
