@@ -1,8 +1,11 @@
-﻿using Consul;
-using ConsulTest.Library;
-using ConsulTest.Library.Registration;
-using System;
+﻿using System;
 using System.Threading;
+using Autofac;
+using ConsulTest.Library;
+using ConsulTest.Library.Consul;
+using ConsulTest.Library.Consul.Registration;
+using ConsulTest.Library.Logging;
+using ConsulTest.Library.ServiceRegistry;
 
 namespace ConsulTest.Client
 {
@@ -10,15 +13,19 @@ namespace ConsulTest.Client
     {
         static void Main(string[] args)
         {
-            var client = new Client();
+            var container = BuildDependencies();
 
-            var consulClient = new ConsulClient(config => config.Address = new Uri("http://consul:8500"));
-            var consulRegistry = new ConsulRegistry(consulClient);
-            consulRegistry.CreateServiceRegistration("console-client", 80)
-                .AddHttpHealthCheckEndpoint(1235)
-                .AddHttpCheck(1235, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2))
-                .Register()
-                .Wait();
+            var client = container.Resolve<Client>();
+            
+            var consulRegistry = container.Resolve<IServiceRegistry>();
+            var registrationBuilder = container.Resolve<IConsulServiceRegistrationBuilder>();
+            var registration = registrationBuilder.WithServiceName("console-client")
+                                                  .WithPort(1235)
+                                                  .AddHttpHealthCheckEndpoint(1235)
+                                                  .AddDefaultHttpCheck()
+                                                  .Build();
+
+            consulRegistry.RegisterServiceAsync(registration).Wait();
 
             while (true)
             {
@@ -39,6 +46,17 @@ namespace ConsulTest.Client
 
                 Thread.Sleep(5 * 1000);
             }
+        }
+
+
+        private static IContainer BuildDependencies()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterType<Client>();
+            builder.RegisterModule<LoggingModule>();
+            builder.RegisterModule(new ConsuleModule(new Uri("http://consul:8500")));
+
+            return builder.Build();
         }
     }
 }

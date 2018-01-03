@@ -1,7 +1,11 @@
-﻿using Consul;
-using ConsulTest.Library;
-using ConsulTest.Library.Registration;
+﻿using ConsulTest.Library;
 using System;
+using System.Reflection;
+using Autofac;
+using ConsulTest.Library.Consul;
+using ConsulTest.Library.Consul.Registration;
+using ConsulTest.Library.Logging;
+using ConsulTest.Library.ServiceRegistry;
 
 namespace ConsulTest
 {
@@ -9,28 +13,34 @@ namespace ConsulTest
     {
         static void Main(string[] args)
         {
-            var consulClient = new ConsulClient(config => config.Address = new Uri("http://127.0.0.1:8500"));
-            var consulRegistry = new ConsulRegistry(consulClient);
+            var container = BuildDependencies();
 
-            using (var server = new Server(new[] { "http://*:1234/" }))
+            var consulRegistry = container.Resolve<IServiceRegistry>();
+            var registrationBuilder = container.Resolve<IConsulServiceRegistrationBuilder>();
+            var registration = registrationBuilder.WithServiceName("console-host")
+                                                  .WithPort(1234)
+                                                  .AddDefaultHttpCheck()
+                                                  .AddDefaultTTLCheck()
+                                                  .Build();
+
+            consulRegistry.RegisterServiceAsync(registration).Wait();
+
+            using (var server = container.Resolve<Server>())
             {
-                consulRegistry.CreateServiceRegistration("console-host", 1234)
-                              .AddHttpCheck(
-                                  interval: TimeSpan.FromSeconds(10), 
-                                  deregisterFailedAfter: TimeSpan.FromMinutes(2)
-                              )
-                              .AddTTLCheck(
-                                  ttl: TimeSpan.FromSeconds(30), 
-                                  interval: TimeSpan.FromSeconds(10), 
-                                  deregisterFailedAfter: TimeSpan.FromMinutes(2)
-                              )
-                              .Register()
-                              .Wait();
-
-                Console.WriteLine("Registered service in Consul");
 
                 server.Start();
             }
+        }
+
+
+        private static IContainer BuildDependencies()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new Server(new[] { "http://*:1234/" }));
+            builder.RegisterModule<LoggingModule>();
+            builder.RegisterModule(new ConsuleModule(new Uri("http://consul:8500")));
+
+            return builder.Build();
         }
     }
 }
