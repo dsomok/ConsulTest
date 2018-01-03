@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ConsulTest.Configuration": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "foo": "env_foo"
+      }
+    }
+  }
+}

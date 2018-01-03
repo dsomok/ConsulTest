@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsulTest", "ConsulTest\Co
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{4C555380-4CB5-4F1A-B40E-99DE73168D65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulTest.Client", "ConsulTest.Client\ConsulTest.Client.csproj", "{A1B91920-F873-4F37-A4B9-068E67519B17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsulTest.Client", "ConsulTest.Client\ConsulTest.Client.csproj", "{A1B91920-F873-4F37-A4B9-068E67519B17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulTest.Library", "ConsulTest.Library\ConsulTest.Library.csproj", "{A2096E51-5D22-4A85-91DB-86A2649BB4D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsulTest.Library", "ConsulTest.Library\ConsulTest.Library.csproj", "{A2096E51-5D22-4A85-91DB-86A2649BB4D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsulTest.Configuration", "ConsulTest.Configuration\ConsulTest.Configuration.csproj", "{0A653701-A26B-4C0D-A790-31252EDA5F8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A2096E51-5D22-4A85-91DB-86A2649BB4D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2096E51-5D22-4A85-91DB-86A2649BB4D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2096E51-5D22-4A85-91DB-86A2649BB4D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A653701-A26B-4C0D-A790-31252EDA5F8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A653701-A26B-4C0D-A790-31252EDA5F8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A653701-A26B-4C0D-A790-31252EDA5F8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A653701-A26B-4C0D-A790-31252EDA5F8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
