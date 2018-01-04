@@ -18,7 +18,7 @@ namespace ConsulTest.Library.Consul
 
 
         public ConsulServiceRegistry(IConsulClient client, ILoggerFactory loggerFactory)
-            : base((ILogger) loggerFactory.CreateLogger<ConsulServiceRegistry>())
+            : base(loggerFactory.CreateLogger<ConsulServiceRegistry>())
         {
             _client = client;
         }
@@ -32,7 +32,14 @@ namespace ConsulTest.Library.Consul
         public override async Task<Uri> Discover(string serviceName)
         {
             var result = await this._client.Health.Service(serviceName, tag: null, passingOnly: true);
-            var service = Enumerable.FirstOrDefault<ServiceEntry>(result.Response)?.Service;
+            ServiceEntry first = null;
+            foreach (var entry in result.Response)
+            {
+                first = entry;
+                break;
+            }
+
+            var service = first?.Service;
 
             if (service == null)
             {
@@ -60,6 +67,8 @@ namespace ConsulTest.Library.Consul
             {
                 throw new RegistryNotAccessibleException();
             }
+
+            serviceRegistration.StopTTLUpdater();
         }
     }
 }
