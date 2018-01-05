@@ -21,7 +21,7 @@ namespace ConsulTest.Configuration
             var builder = new ConfigurationBuilder()
                     .AddCommandLine(args, new Dictionary<string, string>() { { "-foo", "foo" } })
                     .AddEnvironmentVariables()
-                    .AddConsulConfiguration("sym.store.bot.bot574")
+                    .AddConsulConfiguration("sym.store.bot.bot574", c => c.Address = new Uri("http://172.22.164.38:8500"))
                 ;
             return builder.Build();
         }

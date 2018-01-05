@@ -33,7 +33,8 @@ namespace ConsulTest.Configuration
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new ConsulConfigurationProvider(_clientConfiguration, _applicationName);
+            var client = new ConsulClient(_clientConfiguration);
+            return new ConsulConfigurationProvider(() => new ConsulClientWrapper(client), _applicationName);
         }
     }
 }

@@ -13,21 +13,21 @@ namespace ConsulTest.Configuration
     {
         internal const string DEFAULT_PREFIX = "sym";
         private readonly string _applicationName;
-        private readonly Action<ConsulClientConfiguration> _clientConfiguration;
         private readonly ILogger _logger;
+        private readonly Func<IConsulClientWrapper> _clientProvider;
 
-        public ConsulConfigurationProvider(Action<ConsulClientConfiguration> clientConfiguration, string applicationName)
+        public ConsulConfigurationProvider(Func<IConsulClientWrapper> clientProvider, string applicationName)
         {
-            _clientConfiguration = clientConfiguration;
+            _clientProvider = clientProvider;
             _applicationName = applicationName;
             _logger = Log.Logger;
         }
 
         public override void Load()
         {
-            using (var consulClient = new ConsulClient(_clientConfiguration))
+            using (var client = _clientProvider())
             {
-                var reply = consulClient.KV.Keys(DEFAULT_PREFIX).Result;
+                var reply = client.GetKeys(DEFAULT_PREFIX);
 
                 if (reply.StatusCode != HttpStatusCode.OK)
                 {
@@ -38,18 +38,11 @@ namespace ConsulTest.Configuration
                 var releavantKeys = GetRelevantKeys(_applicationName, reply.Response);
                 foreach (var key in releavantKeys)
                 {
-                    var configEntry = GetKeyValue(consulClient, key.KeyPath);
+                    var configEntry = client.GetKeyValue(key.KeyPath);
                     _logger.Debug("Loaded configuration setting from Consul: {keyName} : {keyValue}", key.KeyName, configEntry);
                     Data[key.KeyName] = configEntry;
                 }
             }
-        }
-
-        private string GetKeyValue(ConsulClient client, string keyName)
-        {
-            var reply = client.KV.Get(keyName).Result.Response;
-            if (reply.Value == null) return null;
-            return Encoding.UTF8.GetString(reply.Value);
         }
 
         private List<KVEntry> GetRelevantKeys(string applicationName, string[] allEntries)

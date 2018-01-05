@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConsulTest.Configuration\ConsulTest.Configuration.csproj" />
     <ProjectReference Include="..\ConsulTest.Library\ConsulTest.Library.csproj" />
   </ItemGroup>
 
