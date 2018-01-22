@@ -118,5 +118,26 @@ namespace ConsulTest.Tests
             provider.TryGet("another_key", out var another_key).ShouldBe(false);
             another_key.ShouldBe(null);
         }
+
+        [Fact]
+        private void TestTuple()
+        {
+            InnerTupleTool.GetTuple().Item1.ShouldBe("Key");
+            ;
+        }
+
+        [Fact]
+        private void TestLibTuple()
+        {
+           TupleTool.GetTuple().Item1.ShouldBe("Key");
+        }
+    }
+
+    public class InnerTupleTool
+    {
+        public static (string, string) GetTuple()
+        {
+            return ("Key", "Value");
+        }
     }
 }
